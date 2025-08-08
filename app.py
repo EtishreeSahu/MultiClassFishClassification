@@ -1,48 +1,75 @@
 import streamlit as st
-import numpy as np
-import gdown
+import tensorflow as tf
 from tensorflow.keras.models import load_model
-from PIL import Image, ImageOps
+from tensorflow.keras.preprocessing import image
+import numpy as np
+import requests
+import os
+from PIL import Image
 
-# Direct link to your MobileNetV2 model
+# ------------------------------
+# CONFIG
+# ------------------------------
 MODEL_URL = "https://drive.google.com/uc?id=1mpaj_mwcshSinDIHmWdHcc-S-xdPcUvq"
-MODEL_PATH = "mobilenetv2_fish_model.h5"
-
-@st.cache_resource
-def load_fish_model():
-    # Download and load the model
-    gdown.download(MODEL_URL, MODEL_PATH, quiet=False)
-    return load_model(MODEL_PATH)
-
-model = load_fish_model()
-
-# Replace these with your actual fish species names
-class_labels = [
-    'Black Sea Sprat', 'Gilt-Head Bream', 'Horse Mackerel', 'Red Mullet',
+MODEL_PATH = "mobilenet_fish_model.h5"
+CLASS_LABELS = [
+    'Black Sea Sprat', 'Gilt-Head Bream', 'Hourse Mackerel', 'Red Mullet',
     'Red Sea Bream', 'Sea Bass', 'Shrimp', 'Striped Red Mullet',
-    'Trout', 'Herring', 'Salmon'
+    'Trout', 'Sea Sprat', 'Other'
 ]
 
-st.title("🐟 Multiclass Fish Classification (MobileNetV₂)")
-st.write("Upload a fish image and see which species the model predicts.")
+# ------------------------------
+# DOWNLOAD MODEL
+# ------------------------------
+def download_model():
+    if not os.path.exists(MODEL_PATH):
+        st.info("Downloading model... please wait.")
+        r = requests.get(MODEL_URL, allow_redirects=True)
+        if r.status_code != 200:
+            st.error("Failed to download the model. Please check the URL or permissions.")
+            st.stop()
+        open(MODEL_PATH, 'wb').write(r.content)
+        st.success("Model downloaded successfully!")
 
-uploaded_file = st.file_uploader("Choose a fish image...", type=["jpg","jpeg","png"])
-if uploaded_file:
-    img = Image.open(uploaded_file).convert("RGB")
-    st.image(img, caption="Uploaded Image", use_column_width=True)
-    
-    # Preserve image quality while resizing
-    img_resized = ImageOps.fit(img, (224, 224), Image.Resampling.LANCZOS)
-    img_array = np.array(img_resized) / 255.0
+# ------------------------------
+# LOAD MODEL
+# ------------------------------
+@st.cache_resource
+def load_fish_model():
+    download_model()
+    model = load_model(MODEL_PATH)
+    return model
+
+# ------------------------------
+# PREDICTION FUNCTION
+# ------------------------------
+def predict_image(img, model):
+    img = img.resize((224, 224))  # MobileNetV2 input size
+    img_array = image.img_to_array(img)
     img_array = np.expand_dims(img_array, axis=0)
-    
-    preds = model.predict(img_array)[0]
-    pred_class = class_labels[np.argmax(preds)]
-    confidence = np.max(preds) * 100
-    
-    st.write(f"### Prediction: **{pred_class}**")
-    st.write(f"**Confidence:** {confidence:.2f}%")
-    
-    st.subheader("Class Probabilities:")
-    for label, prob in zip(class_labels, preds):
-        st.write(f"{label}: {prob*100:.2f}%")
+    img_array = tf.keras.applications.mobilenet_v2.preprocess_input(img_array)
+
+    predictions = model.predict(img_array)
+    predicted_class = CLASS_LABELS[np.argmax(predictions)]
+    confidence = np.max(predictions) * 100
+    return predicted_class, confidence
+
+# ------------------------------
+# STREAMLIT UI
+# ------------------------------
+st.title("🐟 Multiclass Fish Image Classification")
+st.write("Upload an image of a fish and the model will classify it.")
+
+uploaded_file = st.file_uploader("Upload a fish image", type=["jpg", "jpeg", "png"])
+
+if uploaded_file is not None:
+    image_file = Image.open(uploaded_file).convert("RGB")
+    st.image(image_file, caption="Uploaded Image", use_column_width=True)
+
+    model = load_fish_model()
+
+    if st.button("Predict"):
+        with st.spinner("Classifying..."):
+            predicted_class, confidence = predict_image(image_file, model)
+        st.success(f"Prediction: **{predicted_class}**")
+        st.info(f"Confidence: {confidence:.2f}%")
