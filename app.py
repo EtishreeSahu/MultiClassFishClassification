@@ -1,58 +1,23 @@
-import streamlit as st
-import numpy as np
+from tensorflow.keras.applications import MobileNetV2
+from tensorflow.keras.layers import GlobalAveragePooling2D, Dense, Dropout
+from tensorflow.keras.models import Model
 import gdown
-from tensorflow.keras.models import load_model
-from tensorflow.keras.preprocessing import image
-from PIL import Image, ImageOps
 
-# Google Drive direct download link
 MODEL_URL = "https://drive.google.com/uc?id=1gNh7c-LdAew8x94y6VCa1I9rfTMgZGky"
-MODEL_PATH = "mobilenetv2_fish_model.h5"
+MODEL_PATH = "mobilenetv2_weights.h5"
 
-# Download model from Google Drive if not already present
-@st.cache_resource
-def load_fish_model():
-    gdown.download(MODEL_URL, MODEL_PATH, quiet=False)
-    model = load_model(MODEL_PATH)
-    return model
+# Download weights
+gdown.download(MODEL_URL, MODEL_PATH, quiet=False)
 
-model = load_fish_model()
+# Rebuild architecture
+base_model = MobileNetV2(weights=None, include_top=False, input_shape=(224,224,3))
+x = GlobalAveragePooling2D()(base_model.output)
+x = Dropout(0.5)(x)
+x = Dense(128, activation='relu')(x)
+x = Dropout(0.5)(x)
+predictions = Dense(11, activation='softmax')(x)
 
-# Class labels (update if needed)
-class_labels = [
-    'Black Sea Sprat', 'Gilt-Head Bream', 'Hourse Mackerel',
-    'Red Mullet', 'Red Sea Bream', 'Sea Bass',
-    'Shrimp', 'Striped Red Mullet', 'Trout',
-    'Salmon', 'Other'
-]
+model = Model(inputs=base_model.input, outputs=predictions)
 
-# Streamlit UI
-st.title("🐟 Multiclass Fish Classification - MobileNetV2")
-st.write("Upload a fish image to predict its class.")
-
-uploaded_file = st.file_uploader("Choose an image...", type=["jpg", "jpeg", "png"])
-
-if uploaded_file is not None:
-    img = Image.open(uploaded_file).convert("RGB")
-    st.image(img, caption="Uploaded Image", use_column_width=True)
-
-    # Resize without blurring
-    img_resized = ImageOps.fit(img, (224, 224), Image.Resampling.LANCZOS)
-
-    # Preprocess
-    img_array = image.img_to_array(img_resized) / 255.0
-    img_array = np.expand_dims(img_array, axis=0)
-
-    # Predict
-    preds = model.predict(img_array)
-    predicted_class = class_labels[np.argmax(preds)]
-    confidence = np.max(preds) * 100
-
-    # Output
-    st.subheader(f"Prediction: {predicted_class}")
-    st.write(f"Confidence: {confidence:.2f}%")
-
-    # Show all class probabilities
-    st.subheader("Class Probabilities:")
-    for label, prob in zip(class_labels, preds[0]):
-        st.write(f"{label}: {prob*100:.2f}%")
+# Load weights
+model.load_weights(MODEL_PATH)
