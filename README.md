@@ -1,3 +1,6 @@
+
+
+````markdown
 # 🐟 Multiclass Fish Image Classification
 
 A deep learning project that classifies fish images into 11 species using **MobileNetV2 (Transfer Learning)**.  
@@ -48,3 +51,53 @@ It downloads the trained `.h5` model from Google Drive at runtime.
 ```bash
 git clone https://github.com/YOUR_USERNAME/fish-image-classification-streamlit.git
 cd fish-image-classification-streamlit
+````
+
+2. Install dependencies:
+
+```bash
+pip install -r requirements.txt
+```
+
+3. Run the app:
+
+```bash
+streamlit run app.py
+```
+
+---
+
+## 🖼 Features
+
+* Upload a fish image (`.jpg`, `.jpeg`, `.png`)
+* Get predicted species with confidence score
+* View probabilities for all 11 species
+* Lightweight model, suitable for real-time use
+
+---
+
+## 📊 Model Performance Comparison
+
+| Model         | Accuracy | Precision | Recall | F1-Score |
+| ------------- | -------- | --------- | ------ | -------- |
+| CNN (Scratch) | 95.60%   | 0.9532    | 0.9560 | 0.9538   |
+| MobileNetV2   | 98.62%   | 0.9864    | 0.9862 | 0.9850   |
+
+---
+
+## 📌 Business Impact
+
+* **Fisheries:** Automate sorting and labeling of fish species
+* **Marine Biology:** Assist in species research and monitoring
+* **Food Industry:** Improve quality control in seafood processing
+
+---
+
+## ✨ Credits
+
+Developed by **YOUR NAME** as part of a computer vision deep learning project.
+
+```
+
+---
+
