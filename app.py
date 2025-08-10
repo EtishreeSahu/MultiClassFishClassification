@@ -1,31 +1,40 @@
 import streamlit as st
+import tensorflow as tf
+from tensorflow.keras.models import load_model
+from PIL import Image
+import numpy as np
+import gdown
+import os
+
+st.title("🐟 Multiclass Fish Image Classification")
+
+# Download model from Google Drive
+MODEL_PATH = "fish_model.keras"
+if not os.path.exists(MODEL_PATH):
+    file_id = "1mpaj_mwcshSinDIHmWdHcc-S-xdPcUvq"  # Replace with your file id
+    gdown.download(f"https://drive.google.com/uc?id={file_id}", MODEL_PATH, quiet=False)
+
 @st.cache_resource
 def load_fish_model():
-    import requests
-    file_id = "1mpaj_mwcshSinDIHmWdHcc-S-xdPcUvq"
-    model_url = f"https://drive.google.com/uc?id={file_id}"
-    model_path = "mobilenet_fish_weights.h5"
-    
-    if not os.path.exists(model_path):
-        r = requests.get(model_url)
-        with open(model_path, "wb") as f:
-            f.write(r.content)
-    
-    from tensorflow.keras.applications import MobileNetV2
-    from tensorflow.keras.models import Sequential
-    from tensorflow.keras.layers import GlobalAveragePooling2D, Dense, Dropout
+    return load_model(MODEL_PATH)
 
-    base_model = MobileNetV2(weights=None, include_top=False, input_shape=(224, 224, 3))
-    base_model.trainable = False
+model = load_fish_model()
 
-    model = Sequential([
-        base_model,
-        GlobalAveragePooling2D(),
-        Dropout(0.5),
-        Dense(128, activation='relu'),
-        Dropout(0.3),
-        Dense(11, activation='softmax')
-    ])
+# Class labels
+class_labels = ["Class1", "Class2", "Class3"]  # Replace with your fish classes
 
-    model.load_weights(model_path)
-    return model
+uploaded_file = st.file_uploader("Upload a fish image", type=["jpg", "jpeg", "png"])
+
+if uploaded_file is not None:
+    image = Image.open(uploaded_file).convert("RGB")
+    st.image(image, caption="Uploaded Image", use_column_width=True)
+
+    img = image.resize((224, 224))
+    img_array = np.array(img) / 255.0
+    img_array = np.expand_dims(img_array, axis=0)
+
+    preds = model.predict(img_array)
+    predicted_class = class_labels[np.argmax(preds)]
+    confidence = np.max(preds) * 100
+
+    st.success(f"Predicted: **{predicted_class}** with confidence **{confidence:.2f}%**")
