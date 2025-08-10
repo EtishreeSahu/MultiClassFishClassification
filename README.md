@@ -1,103 +1,85 @@
 
-
-````markdown
 # 🐟 Multiclass Fish Image Classification
 
-A deep learning project that classifies fish images into 11 species using **MobileNetV2 (Transfer Learning)**.  
-The best model is deployed via a **Streamlit web app** for real-time fish species prediction from user-uploaded images.
+A deep learning project that classifies fish images into multiple categories using **MobileNetV2** and **Streamlit**.  
+The model is trained on fish datasets and deployed as a web application for easy use.
 
 ---
 
-## 📌 Project Overview
-This project leverages computer vision and transfer learning to identify fish species from images.  
-We trained two models:
-1. **CNN from Scratch** – Baseline model  
-2. **MobileNetV2** – Pre-trained on ImageNet, fine-tuned for our dataset  
-
-**Best Model:** MobileNetV2 with:
-- **Accuracy:** 98.62%
-- **Precision:** 0.9864
-- **Recall:** 0.9862
-- **F1-Score:** 0.9850
+## 🌐 Live Demo
+Check out the live Streamlit app here:  
+[Multiclass Fish Classification App](https://multiclassfishclassification-bmoodjp45evwcaxf2anwdk.streamlit.app/)
 
 ---
 
-## 🗂 Dataset
-- **Source:** Provided dataset of 11 fish species
-- **Structure:** `train/`, `val/`, and `test/` folders
-- **Size:** ~10K images
+## 📂 Project Structure
+```
 
----
+multiclassfishclassification/
+│
+├── app.py                  # Streamlit app script
+├── requirements.txt        # Python dependencies
+├── mobilenetv2\_fish\_model.h5  # Trained model (loaded from Google Drive in app)
+└── README.md               # Project documentation
 
-## 🛠 Tech Stack
-- **Python**
-- **TensorFlow / Keras**
-- **Streamlit**
-- **gdown** (to load model from Google Drive)
-- **NumPy, Pillow** (image preprocessing)
-
----
-
-## 🚀 Deployment
-The app is deployed on **Streamlit Cloud**.  
-It downloads the trained `.h5` model from Google Drive at runtime.
-
-🔗 **Live Demo:** [Click here to view the app](YOUR_STREAMLIT_APP_LINK) *(Replace with your link after deployment)*
-
----
-
-## 📥 How to Run Locally
-1. Clone this repo:
-```bash
-git clone https://github.com/YOUR_USERNAME/fish-image-classification-streamlit.git
-cd fish-image-classification-streamlit
 ````
 
-2. Install dependencies:
+---
+
+## ⚙️ How It Works
+1. Upload a fish image in JPG, JPEG, or PNG format.
+2. The model preprocesses the image and resizes it to **224x224**.
+3. The image is passed to a trained **MobileNetV2** model.
+4. The app displays the predicted fish species and confidence score.
+
+---
+
+## 🛠️ Tech Stack
+- **Python 3.10+**
+- **TensorFlow / Keras**
+- **Streamlit**
+- **MobileNetV2 (Transfer Learning)**
+- **gdown** (to download the model from Google Drive)
+- **Pillow** (image handling)
+- **NumPy**
+
+---
+
+## 🚀 How to Run Locally
 
 ```bash
+# Clone the repository
+git clone https://github.com/etishreesahu/multiclassfishclassification.git
+
+# Navigate to project directory
+cd multiclassfishclassification
+
+# Install dependencies
 pip install -r requirements.txt
-```
 
-3. Run the app:
-
-```bash
+# Run Streamlit app
 streamlit run app.py
-```
+````
 
 ---
 
-## 🖼 Features
+## 📌 Features
 
-* Upload a fish image (`.jpg`, `.jpeg`, `.png`)
-* Get predicted species with confidence score
-* View probabilities for all 11 species
-* Lightweight model, suitable for real-time use
-
----
-
-## 📊 Model Performance Comparison
-
-| Model         | Accuracy | Precision | Recall | F1-Score |
-| ------------- | -------- | --------- | ------ | -------- |
-| CNN (Scratch) | 95.60%   | 0.9532    | 0.9560 | 0.9538   |
-| MobileNetV2   | 98.62%   | 0.9864    | 0.9862 | 0.9850   |
+* Upload and classify fish images instantly
+* MobileNetV2 transfer learning model
+* Displays prediction confidence
+* Lightweight and fast web app
 
 ---
 
-## 📌 Business Impact
+## 👩‍💻 Author
 
-* **Fisheries:** Automate sorting and labeling of fish species
-* **Marine Biology:** Assist in species research and monitoring
-* **Food Industry:** Improve quality control in seafood processing
-
----
-
-## ✨ Credits
-
-Developed by **YOUR NAME** as part of a computer vision deep learning project.
+**Etishree Sahu**
+GitHub: [etishreesahu](https://github.com/etishreesahu)
 
 ```
 
----
+This will display correctly on GitHub — **Author** will no longer be stuck in the code block.  
 
+Do you also want me to add a **"Sample Predictions"** section with images for your README so it looks more appealing? That would make it more professional.
+```
