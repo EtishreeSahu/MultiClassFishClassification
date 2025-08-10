@@ -13,8 +13,8 @@ st.title("🐟 Multiclass Fish Image Classification")
 # Google Drive file download
 MODEL_PATH = "mobilenetv2_fish_model.h5"
 if not os.path.exists(MODEL_PATH):
-    file_id = "1mpaj_mwcshSinDIHmWdHcc-S-xdPcUvq"  # Replace with your actual file id
-    gdown.download(f"https://drive.google.com/uc?id={file_id}", MODEL_PATH, quiet=False)
+    file_id = "1yn-uC6GAfmcKdPWxFoVx5BvlRNoeFMxf"
+gdown.download(f"https://drive.google.com/uc?id={file_id}", MODEL_PATH, quiet=False)
 
 @st.cache_resource
 def load_fish_model():
