@@ -14,7 +14,8 @@ st.title("🐟 Multiclass Fish Image Classification")
 # ---------------------------
 # Model File Setup
 # ---------------------------
-MODEL_PATH = "fish_model.keras"   # Change to "fish_model.h5" if your model is in .h5 format
+MODEL_PATH = "fish_model.keras"
+   # Change to "fish_model.h5" if your model is in .h5 format
 FILE_ID = "1mpaj_mwcshSinDIHmWdHcc-S-xdPcUvq"
 GDRIVE_URL = f"https://drive.google.com/uc?export=download&id={FILE_ID}"
 
